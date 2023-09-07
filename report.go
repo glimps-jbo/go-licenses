@@ -44,10 +44,12 @@ var (
 	}
 
 	templateFile string
+	timeout      = time.Second * 20
 )
 
 func init() {
 	reportCmd.Flags().StringVar(&templateFile, "template", "", "Custom Go template file to use for report")
+	reportCmd.Flags().DurationVar(&timeout, "timeout", time.Second*20, "Download package timeout")
 
 	rootCmd.AddCommand(reportCmd)
 }
@@ -93,7 +95,7 @@ func reportMain(_ *cobra.Command, args []string) error {
 	}
 
 	reportData := make([]libraryData, len(libs))
-	client := source.NewClient(time.Second * 20)
+	client := source.NewClient(timeout)
 	group, gctx := errgroup.WithContext(context.Background())
 	for idx, lib := range libs {
 		idx := idx
